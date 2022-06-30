@@ -11,7 +11,7 @@ import com.book.exception.BookNotFoundException;
 public interface BookService {
 	
 	Book save(Book book);
-	void deletebyId(int id);
+	void deletebyId(int id) throws BookNotFoundException;
 	Book updateBookById(Book book , int id) throws BookNotFoundException ;
 	Book updateBook(Book book);
 	List<Book> getAllBooks();

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import com.book.entity.Book;
@@ -12,6 +14,7 @@ import com.book.repo.BookRepository;
 
 
 @Service
+@EnableCaching
 public class BookServiceImpl implements BookService{
 	
 	
@@ -24,7 +27,11 @@ public class BookServiceImpl implements BookService{
 	}
 
 	@Override
-	public void deletebyId(int id) {
+	public void deletebyId(int id) throws BookNotFoundException {
+		Optional <Book> optional=bookRepository.findById(id);
+		if(optional.isEmpty()) {
+			throw new BookNotFoundException("Book with id:"+ id + " Not available ");
+		}
       bookRepository.deleteById(id);		
 	}
 
@@ -48,6 +55,7 @@ public class BookServiceImpl implements BookService{
 
 
 	@Override
+	@Cacheable(key ="#id" , value="book-store")
 	public Book findBookById(int id) throws BookNotFoundException {
 		 Optional <Book> existingbook=bookRepository.findById(id);
 		 if(existingbook.isEmpty()) {
@@ -55,8 +63,8 @@ public class BookServiceImpl implements BookService{
 		 }
 
 		
-		 Book book=existingbook.get();
-		 return book;
+		 return existingbook.get();
+		
 	}
 	
 	
